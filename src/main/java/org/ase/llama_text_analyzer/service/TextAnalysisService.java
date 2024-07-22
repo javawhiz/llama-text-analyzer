@@ -2,6 +2,7 @@ package org.ase.llama_text_analyzer.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -18,14 +19,15 @@ public class TextAnalysisService {
 
 
     private final OllamaChatModel ollamaChatModel;
+    private final ChatClient ollamaChatClient;
 
     private static final String PROMPT = """
             Act as an English language expert. Please perform sentiment analysis and then summarize this feedback.
-            Please do not generate any explanation of the sentiment analysis or the summarization.
+            Please do not generate any explanation of the sentiment analysis or the summarization and Respond using JSON.
                         
             Please Generate the output in below format
-            sentiment: {Sentiment of the feedback}
-            summary: {Summary of the feedback}
+            sentiment: [Sentiment of the feedback]
+            summary: [Summary of the feedback]
                         
             Here is the Feedback: %s
             """;
@@ -39,5 +41,12 @@ public class TextAnalysisService {
                                  .collect(Collectors.joining(" "));
         log.info("Response from sentiment analysis {}", response);
         return response;
+    }
+
+    public String sentimentAnalysisViaChatClient(String feedback) {
+        return ollamaChatClient.prompt()
+                               .user(feedback)
+                               .call()
+                               .content();
     }
 }

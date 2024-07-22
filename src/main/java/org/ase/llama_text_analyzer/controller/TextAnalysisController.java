@@ -26,4 +26,11 @@ public class TextAnalysisController {
         log.info("Received feedback for sentiment analysis {}", feedback);
         return ResponseEntity.ok(textAnalysisService.analyzeSentiment(feedback));
     }
+
+    @PostMapping("/analyze-sentiment-via-chat-client")
+    public ResponseEntity<String> analyzeSentimenViaChatClient(@RequestBody @NotEmpty @NotNull @Length(min = 10, max = 2000,
+            message = "Please send message length between 10 & 2000 characters") String feedback) {
+        log.info("Received feedback for sentiment analysis {}", feedback);
+        return ResponseEntity.ok(textAnalysisService.sentimentAnalysisViaChatClient(feedback));
+    }
 }
