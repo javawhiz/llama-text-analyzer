@@ -3,27 +3,28 @@ package org.ase.llama_text_analyzer;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import org.ase.llama_text_analyzer.controller.TextAnalysisController;
 import org.ase.llama_text_analyzer.model.TextRequest;
+import org.ase.llama_text_analyzer.service.TextAnalysisService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class TextAnalysisControllerTests {
 
-    @Autowired
     private MockMvc mockMvc;
 
     private Validator validator;
@@ -31,6 +32,16 @@ class TextAnalysisControllerTests {
     @BeforeEach
     void setUp() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        TextAnalysisService textAnalysisService = mock(TextAnalysisService.class);
+        when(textAnalysisService.analyzeSentiment(any(TextRequest.class))).thenReturn("positive");
+
+        LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
+        localValidatorFactoryBean.afterPropertiesSet();
+
+        mockMvc = MockMvcBuilders.standaloneSetup(new TextAnalysisController(textAnalysisService))
+                .setValidator(localValidatorFactoryBean)
+                .build();
     }
 
     @Test

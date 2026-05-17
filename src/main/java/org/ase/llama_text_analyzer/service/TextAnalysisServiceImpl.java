@@ -9,6 +9,7 @@ import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,5 +52,10 @@ public class TextAnalysisServiceImpl implements TextAnalysisService {
                                .user(textRequest.getText())
                                .call()
                                .content();
+    }
+
+    private String getWeatherByCityName(RestTemplate restTemplate, String cityName, String apiKey) {
+        String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s", cityName, apiKey);
+        return restTemplate.getForObject(url, String.class);
     }
 }

@@ -1,5 +1,6 @@
 package org.ase.llama_text_analyzer.controller;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.*;
 import org.springframework.validation.method.ParameterValidationResult;
@@ -18,13 +19,13 @@ import java.util.List;
 public class RestExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex,
-                                                                            HttpHeaders headers,
-                                                                            HttpStatusCode status,
-                                                                            WebRequest request) {
+                                                                            @NonNull HttpHeaders headers,
+                                                                            @NonNull HttpStatusCode status,
+                                                                            @NonNull WebRequest request) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,
                 ex.getMessage());
         problemDetail.setTitle("Validation Error");
-        List<String> errors = ex.getAllValidationResults().stream()
+        List<String> errors = ex.getParameterValidationResults().stream()
                                 .map(ParameterValidationResult::getResolvableErrors)
                                 .flatMap(Collection::stream)
                                 .map(MessageSourceResolvable::getDefaultMessage)

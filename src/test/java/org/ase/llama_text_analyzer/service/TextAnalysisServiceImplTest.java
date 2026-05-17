@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -38,7 +39,7 @@ class TextAnalysisServiceImplTest {
         TextRequest textRequest = new TextRequest();
         textRequest.setText("This is a test.");
 
-        Generation generation = new Generation("positive");
+        Generation generation = new Generation(new AssistantMessage("positive"));
         ChatResponse chatResponse = new ChatResponse(List.of(generation));
 
         when(ollamaChatModel.call(any(Prompt.class))).thenReturn(chatResponse);
@@ -49,9 +50,9 @@ class TextAnalysisServiceImplTest {
     }
 
     @Mock
-    ChatClient.ChatClientRequest.CallResponseSpec callResponseSpec;
+    ChatClient.CallResponseSpec callResponseSpec;
     @Mock
-    ChatClient.ChatClientRequest chatClientRequest;
+    ChatClient.ChatClientRequestSpec chatClientRequest;
 
     @Test
     void sentimentAnalysisViaChatClientReturnsExpectedResponse() {
